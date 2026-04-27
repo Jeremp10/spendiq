@@ -26,6 +26,8 @@ def parse_csv(file_bytes: bytes):
     # Rename columns into standard names
     df.rename(columns=column_mapping, inplace=True)
 
+    df["date"] = pd.to_datetime(df["date"]).dt.date
+
     #checking for missing
     missing = [col for col in ["date", "description", "amount"] if col not in df.columns]
     if missing:
