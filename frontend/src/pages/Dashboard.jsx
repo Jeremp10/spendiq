@@ -7,6 +7,7 @@ const COLORS = ["#22c55e", "#16a34a", "#4ade80", "#86efac", "#bbf7d0", "#059669"
 
 export default function Dashboard() {
   const [spending, setSpending] = useState({})
+  const [transactions, setTransactions] = useState([])
   const [loading, setLoading] = useState(true)
   const navigate = useNavigate()
 
@@ -19,6 +20,14 @@ export default function Dashboard() {
       .catch(error => {
         console.error("Failed to fetch spending data", error)
         setLoading(false)
+      })
+
+    client.get("/")
+      .then(response => {
+        setTransactions(response.data)
+      })
+      .catch(error => {
+        console.error("Failed to fetch transactions", error)
       })
   }, [])
 
@@ -116,6 +125,37 @@ export default function Dashboard() {
               </div>
             </div>
           ))}
+        </div>
+
+        {/* Transaction table */}
+        <div className="bg-white rounded-2xl shadow-sm p-6 border border-gray-100 mt-6">
+          <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-4">
+            Transactions
+          </h3>
+          <table className="w-full text-sm">
+            <thead>
+              <tr className="text-left text-gray-400 border-b border-gray-100">
+                <th className="pb-3 font-medium">Date</th>
+                <th className="pb-3 font-medium">Description</th>
+                <th className="pb-3 font-medium">Category</th>
+                <th className="pb-3 font-medium text-right">Amount</th>
+              </tr>
+            </thead>
+            <tbody>
+              {transactions.map((t, index) => (
+                <tr key={index} className="border-b border-gray-50 last:border-0 hover:bg-gray-50 transition-colors">
+                  <td className="py-3 text-gray-400">{t.date}</td>
+                  <td className="py-3 text-gray-700">{t.description}</td>
+                  <td className="py-3">
+                    <span className="bg-green-50 text-green-600 text-xs px-2 py-1 rounded-full">
+                      {t.category_confirmed || t.category}
+                    </span>
+                  </td>
+                  <td className="py-3 text-right font-semibold text-gray-900">${t.amount}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
 
       </div>
